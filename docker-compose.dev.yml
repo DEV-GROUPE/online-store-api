@@ -1,0 +1,38 @@
+services:
+  api:
+    image: image_name
+    build:
+      context: .
+      target: development
+    ports:
+      - "8000:8000"
+    environment:
+      NODE_ENV: development
+      URI: mongodb://root:password@mongo:27017
+      PORT: 8000
+    depends_on:
+      - mongo
+
+    develop:
+      watch:
+        - path: ./package.json
+          action: rebuild
+        - path: ./package-lock.json
+          action: rebuild
+        
+        - path: ./
+          target: /app
+          action: sync
+
+  mongo:
+    image: mongo
+    restart: always
+    volumes:
+      - mongo-db:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+
+  
+volumes:
+  mongo-db:

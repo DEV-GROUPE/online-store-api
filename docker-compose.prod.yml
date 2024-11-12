@@ -1,0 +1,14 @@
+services:
+  api:
+    image: image_name
+    build:
+      context: .
+      target: production
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    
+    environment:
+      NODE_ENV: production
+      PORT: 8000
