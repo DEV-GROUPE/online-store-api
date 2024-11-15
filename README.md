@@ -39,27 +39,6 @@ This API provides backend functionality for an eCommerce platform where users ca
 - **MongoDB** instance (local or cloud)
 - **Docker** (optional, if using Docker for setup)
 
-### Installation
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/username/ecommerce-api.git
-   cd ecommerce-api
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Set up environment variables (see [Environment Variables](#environment-variables) below).
-
-4. Start the server:
-   ```bash
-   npm start
-   ```
-
-5. The API will be available at `http://localhost:3000`.
-
 ### Running with Docker
 1. Ensure Docker is installed and running.
 2. Build and run the Docker containers:
