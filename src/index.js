@@ -1,5 +1,8 @@
 import express from "express";
 import mongoose from "mongoose";
+import dotenv from "dotenv";
+import userRoutes from "./routes/user.js";
+dotenv.config();
 
 // express app
 const app = express();
@@ -8,9 +11,11 @@ const app = express();
 app.use(express.json());
 
 app.use((req, res, next) => {
-    console.log(req.path, req.method);
-    next();
+  console.log(`[${req.method}] ${req.path}`);
+  next();
 });
+
+app.use("/api/user", userRoutes);
 
 // connect to db
 mongoose
