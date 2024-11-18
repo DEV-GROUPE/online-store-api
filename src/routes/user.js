@@ -1,4 +1,5 @@
 import express from "express";
+import requireAuth from "../middleware/requireAuth.js";
 
 import {
     loginUser,
@@ -21,6 +22,9 @@ router.post("/", addUser);
 
 // get all users
 router.get("/users", getUsers);
+
+router.use(requireAuth);
+
 // get user
 router.get("/", getMyProfile);
 // update

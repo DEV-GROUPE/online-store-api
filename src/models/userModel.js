@@ -84,13 +84,13 @@ userSchema.statics.createUser = async function (
     role
 ) {
     // validation
-    if (!email || !password || !username || !password) {
+    if (!email || !password || !username) {
         throw Error("All fields must be filled");
     }
     if (!validator.isEmail(email)) {
         throw Error("Email not valid");
     }
-    if (!ROLE_ENUM.includes(role)) {
+    if (!Object.values(USER_ROLES).includes(role)) {
         role = "user";
     }
 
