@@ -1,35 +1,62 @@
 import express from "express";
 import requireAuth from "../middleware/requireAuth.js";
+import authorization from "../middleware/authorization.js";
 
 import {
     loginUser,
     signupUser,
-    getUsers,
-    addUser,
     getMyProfile,
     deleteMyProfile,
     updateMyProfile,
+    getUsers,
+    getUser,
+    addUser,
+    deleteUser,
+    updateUser,
 } from "../controllers/userController.js";
 
 const router = express.Router();
 
-// login/register
+/* 
+    -no role
+    -auth
+*/
+
+//login
 router.post("/login", loginUser);
+//signup
 router.post("/signup", signupUser);
 
-// add
-router.post("/", addUser);
-
-// get all users
-router.get("/users", getUsers);
+/* 
+    -user role
+    -profile crud
+*/
 
 router.use(requireAuth);
 
-// get user
+// get profile
 router.get("/", getMyProfile);
-// update
+// update profile
 router.patch("/", updateMyProfile);
-// delete
+// delete profile
 router.delete("/", deleteMyProfile);
+
+/* 
+    -admin role
+    -user crud
+*/
+
+router.use(authorization("admin"));
+
+// get all users
+router.get("/admin", getUsers);
+// get user
+router.get("/admin/:id", getUser);
+// add user
+router.post("/admin/:id", addUser);
+// update user
+router.patch("/admin/:id", updateUser);
+// delete user
+router.delete("/admin/:id", deleteUser);
 
 export default router;

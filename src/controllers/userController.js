@@ -1,13 +1,10 @@
 import mongoose from "mongoose";
-import jwt from "jsonwebtoken";
-import { PasswordHash } from "./../helpers/functions.js";
+import { PasswordHash, createToken } from "./../helpers/functions.js";
 import User from "../models/userModel.js";
 
-// Create a token
-const createToken = (_id) => {
-    return jwt.sign({ _id }, process.env.SECRET, { expiresIn: "3d" });
-};
-
+/* 
+    auth
+*/
 const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
@@ -38,31 +35,10 @@ const signupUser = async (req, res) => {
     }
 };
 
-const getUsers = async (req, res) => {
-    try {
-        const users = await User.find();
-        res.status(200).json({ users });
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
-
-const addUser = async (req, res) => {
-    const { username, email, password, role } = req.body;
-    try {
-        const user = await User.createUser(username, email, password, role);
-
-        // Create a token
-        const token = createToken(user._id);
-
-        res.status(200).json({ username, email, token });
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
-
+/* 
+    profile
+*/
 const getMyProfile = async (req, res) => {
-    
     const user_id = req.user.id;
     try {
         const users = await User.findById(user_id);
@@ -106,12 +82,93 @@ const updateMyProfile = async (req, res) => {
     res.status(200).json(user);
 };
 
+/* 
+    admin
+*/
+const getUsers = async (req, res) => {
+    try {
+        const users = await User.find();
+        res.status(200).json({ users });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+const getUser = async (req, res) => {
+    const user_id = req.params.id;
+    try {
+        const users = await User.findById(user_id);
+        res.status(200).json({ users });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+const addUser = async (req, res) => {
+    const { username, email, password, role } = req.body;
+    try {
+        const user = await User.createUser(username, email, password, role);
+
+        // Create a token
+        const token = createToken(user._id);
+
+        res.status(200).json({ username, email, token });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+const deleteUser = async (req, res) => {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).json({ error: "No such User" });
+    }
+
+    const user = await User.findOneAndDelete({ _id: id });
+
+    if (!user) {
+        return res.status(400).json({ error: "No such user" });
+    }
+
+    res.status(200).json(user);
+};
+
+const updateUser = async (req, res) => {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).json({ error: "No such user" });
+    }
+
+    const password = req.body.password;
+    if (password) {
+        req.body.password = await PasswordHash(password);
+    }
+
+    const user = await User.findOneAndUpdate(
+        { _id: id },
+        {
+            ...req.body,
+        }
+    );
+
+    if (!user) {
+        return res.status(400).json({ error: "No such user" });
+    }
+
+    res.status(200).json(user);
+};
+
 export {
     loginUser,
     signupUser,
-    getUsers,
-    addUser,
     getMyProfile,
     deleteMyProfile,
     updateMyProfile,
+    getUsers,
+    getUser,
+    addUser,
+    deleteUser,
+    updateUser,
 };
