@@ -9,6 +9,7 @@ services:
     environment:
       NODE_ENV: development
       URI: mongodb://root:password@mongo:27017
+      SECRET: secret
       PORT: 8000
     depends_on:
       - mongo
