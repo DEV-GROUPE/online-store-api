@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { PasswordHash, createToken } from "./../helpers/functions.js";
+import { PasswordHash, createToken } from "../helpers/functions.js";
 import User from "../models/userModel.js";
 
 /* 
