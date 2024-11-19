@@ -1,9 +1,9 @@
-
 import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
 import categoriesRoutes from "./routes/categories.routes.js";
 import userRoutes from "./routes/users.routes.js";
+import { httpStatusText } from "./utils/httpStatusText.js";
 dotenv.config();
 
 // express app
@@ -33,3 +33,20 @@ mongoose
     .catch((err) => {
         console.log(err);
     });
+
+// handle 404 errors
+app.all("*", (req, res) => {
+    res.status(404).json({
+        status: httpStatusText.ERROR,
+        message: "this resource is not available",
+    });
+});
+
+app.use((error, req, res, next) => {
+    res.status(error.statusCode || 500).json({
+        status: error.statusText || httpStatusText.ERROR,
+        message: error.message,
+        code: error.statusCode || 500,
+        data: null,
+    });
+});
