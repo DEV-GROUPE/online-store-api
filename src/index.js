@@ -11,14 +11,14 @@ const app = express();
 
 // middleware
 app.use(express.json());
-app.use("/api/categories", categoriesRoutes);
 
 app.use((req, res, next) => {
-  console.log(`[${req.method}] ${req.path}`);
-  next();
+    console.log(`[${req.method}] ${req.path}`);
+    next();
 });
 
-app.use("/api/user", userRoutes);
+app.use("/api/categories", categoriesRoutes);
+app.use("/api/users", userRoutes);
 
 // connect to db
 mongoose

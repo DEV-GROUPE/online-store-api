@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
-import { PasswordHash } from "./../helpers/functions.js";
+import { PasswordHash } from "../helpers/functions.js";
 import bcrypt from "bcrypt";
 import validator from "validator";
-import { USER_ROLES } from "./../utils/userRoles.js";
+import { USER_ROLES } from "../utils/userRoles.js";
 
 const Schema = mongoose.Schema;
 
