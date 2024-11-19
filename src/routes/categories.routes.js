@@ -1,4 +1,7 @@
 import express from "express";
+import requireAuth from "../middlewares/requireAuth.js";
+import authorization from "../middlewares/authorization.js";
+
 import {
     getAllcategories,
     getcategory,
@@ -9,10 +12,15 @@ import {
 
 const router = express.Router();
 
-router.route("/").post(createCategory).get(getAllcategories);
-router
-    .route("/:id")
-    .get(getcategory)
-    .delete(deleteCotegory)
-    .put(updateCotegory);
+router.get("/", getAllcategories);
+router.get("/:id", getcategory);
+
+
+router.use(requireAuth);
+router.use(authorization("admin"));
+
+router.post("/", createCategory);
+router.delete("/:id", deleteCotegory);
+router.put("/:id", updateCotegory);
+
 export default router;
