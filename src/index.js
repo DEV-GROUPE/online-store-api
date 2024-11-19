@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
 import categoriesRoutes from "./routes/categories.routes.js";
-import {httpStatusText} from "./utils/httpStatusText.js";
+import userRoutes from "./routes/user.js";
 dotenv.config();
 
 // express app
@@ -14,9 +14,11 @@ app.use(express.json());
 app.use("/api/category", categoriesRoutes);
 
 app.use((req, res, next) => {
-    console.log(req.path, req.method);
-    next();
+  console.log(`[${req.method}] ${req.path}`);
+  next();
 });
+
+app.use("/api/user", userRoutes);
 
 // connect to db
 mongoose
