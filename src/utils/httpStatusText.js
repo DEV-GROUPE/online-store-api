@@ -1,5 +1,5 @@
 export const httpStatusText = {
-    SUCCESS: "admin",
+    SUCCESS: "success",
     FAIL: "fail",
     ERROR: "error",
 };
