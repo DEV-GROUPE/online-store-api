@@ -7,11 +7,12 @@ import {
     updatePoduct,
 } from "../controllers/product.controller.js";
 import checkIsValidObjId from "../middlewares/checkIsValidObjId.js";
+import productvaliditionSchema from "../validations/product.validation.js";
 
 
 const router = express.Router();
 
-router.route("/").post(createProdcut).get(getAllPoducts);
+router.route("/").post(productvaliditionSchema(),createProdcut).get(getAllPoducts);
 router.use("/:id", checkIsValidObjId);
 router
     .route("/:id")
