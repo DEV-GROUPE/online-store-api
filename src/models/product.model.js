@@ -1,4 +1,4 @@
-import mongoose, { Schema, model, models } from "mongoose";
+import mongoose, { Schema, model } from "mongoose";
 
 const ProductSchema = new Schema(
     {
@@ -6,8 +6,8 @@ const ProductSchema = new Schema(
         description: { type: String, required: true },
         imageUrl: { type: String, required: true },
         brand: { type: String, required: true },
-        price: { type: mongoose.Schema.Types.Decimal128, required: true },
-        salePrice: { type: mongoose.Schema.Types.Decimal128, required: true },
+        price: { type: String, required: true },
+        salePrice: {type: String, required: true },
         totalStock: { type: Number, required: true },
         averageReview: { type: Number },
         category: { type: Schema.Types.ObjectId, ref: "Category" },
@@ -15,6 +15,6 @@ const ProductSchema = new Schema(
     { timestamps: true }
 );
 
-const Prodcut = models.Product || model("Product", ProductSchema);
+const Prodcut = model("Product", ProductSchema);
 
 export default Prodcut;
