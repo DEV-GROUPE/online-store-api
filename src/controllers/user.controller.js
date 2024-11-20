@@ -3,7 +3,7 @@ import { PasswordHash, createToken } from "../helpers/functions.js";
 import asyncWrapper from "../middlewares/asyncWrapper.js";
 import appError from "../utils/appError.js";
 import { httpStatusText } from "../utils/httpStatusText.js";
-import User from "../models/userModel.js";
+import User from "../models/user.model.js";
 
 /* 
     auth
