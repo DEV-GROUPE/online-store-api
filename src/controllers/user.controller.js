@@ -78,7 +78,22 @@ const updateMyProfile = asyncWrapper(async (req, res) => {
     admin
 */
 const getUsers = asyncWrapper(async (req, res) => {
-    const users = await User.find();
+    const {
+        page = 1,
+        limit = 10,
+        sortBy = "createdAt",
+        order = "asc",
+    } = req.query;
+    // Pagination options
+    const options = {
+        page: parseInt(page, 10),
+        limit: parseInt(limit, 10),
+        sort: { [sortBy]: order === "desc" ? -1 : 1 },
+    };
+
+    // Paginate all users without filters
+    const users = await User.paginate({}, options);
+
     res.status(200).json({ users });
 });
 
@@ -99,7 +114,6 @@ const addUser = asyncWrapper(async (req, res) => {
 
 const deleteUser = asyncWrapper(async (req, res) => {
     const { id } = req.params;
-
 
     const user = await User.findOneAndDelete({ _id: id });
 
