@@ -1,4 +1,4 @@
-import asyncWrapper from "../middlewares/asyncWrapper.js";
+import asyncWrapper from "../middlewares//error/asyncWrapper.js";
 import Prodcut from "../models/product.model.js";
 
 import appError from "../utils/appError.js";

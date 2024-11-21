@@ -1,6 +1,6 @@
 services:
   api:
-    image: image_name
+    image: amineelgaini/online-shop-api
     build:
       context: .
       target: development
@@ -8,7 +8,7 @@ services:
       - "8000:8000"
     environment:
       NODE_ENV: development
-      URI: mongodb://root:password@mongo:27017
+      MONGO_URI: mongodb://root:password@mongo:27017
       SECRET: secret
       PORT: 8000
     depends_on:

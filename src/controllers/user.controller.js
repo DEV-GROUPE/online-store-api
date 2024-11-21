@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { PasswordHash, createToken } from "../helpers/functions.js";
-import asyncWrapper from "../middlewares/asyncWrapper.js";
+import asyncWrapper from "../middlewares//error/asyncWrapper.js";
 import appError from "../utils/appError.js";
 import { httpStatusText } from "../utils/httpStatusText.js";
 import User from "../models/user.model.js";
@@ -94,16 +94,12 @@ const addUser = asyncWrapper(async (req, res) => {
 
     const token = createToken(user._id);
 
-    res.status(200).json({ username, email, token });
+    res.status(200).json({ username, email, token, role: user.role });
 });
 
 const deleteUser = asyncWrapper(async (req, res) => {
     const { id } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        const error = appError.create("Not valid id", 404, httpStatusText.FAIL);
-        return next(error);
-    }
 
     const user = await User.findOneAndDelete({ _id: id });
 
@@ -117,11 +113,6 @@ const deleteUser = asyncWrapper(async (req, res) => {
 
 const updateUser = asyncWrapper(async (req, res) => {
     const { id } = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        const error = appError.create("No such user", 404, httpStatusText.FAIL);
-        return next(error);
-    }
 
     const password = req.body.password;
     if (password) {
