@@ -1,26 +1,26 @@
 import express from "express";
-import requireAuth from "../middlewares/requireAuth.js";
-import authorization from "../middlewares/authorization.js";
+import requireAuth from "../middlewares/auth/requireAuth.js";
+import authorization from "../middlewares/auth/authorization.js";
 
 import {
-    getAllcategories,
-    getcategory,
+    getAllCategories,
+    getCategory,
     createCategory,
-    deleteCotegory,
-    updateCotegory,
+    deleteCategory,
+    updateCategory,
 } from "../controllers/category.controller.js";
+import checkIsValidObjId from "../middlewares/mongoDbIdValidation.js";
 
 const router = express.Router();
 
-router.get("/", getAllcategories);
-router.get("/:id", getcategory);
-
+router.get("/", getAllCategories);
+router.get("/:id", checkIsValidObjId, getCategory);
 
 router.use(requireAuth);
 router.use(authorization("admin"));
 
 router.post("/", createCategory);
-router.delete("/:id", deleteCotegory);
-router.put("/:id", updateCotegory);
+router.delete("/:id", checkIsValidObjId, deleteCategory);
+router.put("/:id", checkIsValidObjId, updateCategory);
 
 export default router;

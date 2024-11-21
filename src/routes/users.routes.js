@@ -1,6 +1,6 @@
 import express from "express";
-import requireAuth from "../middlewares/requireAuth.js";
-import authorization from "../middlewares/authorization.js";
+import requireAuth from "../middlewares/auth/requireAuth.js";
+import authorization from "../middlewares/auth/authorization.js";
 
 import {
     loginUser,
@@ -14,6 +14,9 @@ import {
     deleteUser,
     updateUser,
 } from "../controllers/user.controller.js";
+import checkIsValidObjId from "../middlewares/mongoDbIdValidation.js";
+import validateRequest from "../middlewares/error/validateRequest.js";
+import createUserValidation from "../validationSchema/createUserValidation.js";
 
 const router = express.Router();
 
@@ -51,12 +54,12 @@ router.use(authorization("admin"));
 // get all users
 router.get("/", getUsers);
 // get user
-router.get("/:id", getUser);
+router.get("/:id", checkIsValidObjId, getUser);
 // add user
-router.post("/:id", addUser);
+router.post("/", validateRequest(createUserValidation), addUser);
 // update user
-router.patch("/:id", updateUser);
+router.patch("/:id", checkIsValidObjId, updateUser);
 // delete user
-router.delete("/:id", deleteUser);
+router.delete("/:id", checkIsValidObjId, deleteUser);
 
 export default router;

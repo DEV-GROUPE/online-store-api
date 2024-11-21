@@ -1,6 +1,6 @@
 services:
   api:
-    image: image_name
+    image: amineelgaini/online-shop-api
     build:
       context: .
       target: production

@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import User from "../models/userModel.js";
+import User from "../../models/user.model.js";
 
 const requireAuth = async (req, res, next) => {
     // verify user is authenticated
@@ -16,7 +16,7 @@ const requireAuth = async (req, res, next) => {
 
         req.user = await User.findOne({ _id }).select("_id role");
         if (!req.user) {
-            return res.status(401).json({ error: "User Not Fount" });
+            return res.status(401).json({ error: "Authorization: User Not Fount" });
         }
         next();
     } catch (error) {

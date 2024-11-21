@@ -1,9 +1,10 @@
-import mongoose from "mongoose";
-import asyncWrapper from "../middlewares/asyncWrapper.js";
+import asyncWrapper from "../middlewares//error/asyncWrapper.js";
 import Prodcut from "../models/product.model.js";
 
 import appError from "../utils/appError.js";
 import { httpStatusText } from "../utils/httpStatusText.js";
+import { validationResult } from "express-validator";
+import Category from "../models/category.model.js";
 
 const getAllPoducts = asyncWrapper(async (req, res) => {
     const query = req.query;
@@ -16,15 +17,30 @@ const getAllPoducts = asyncWrapper(async (req, res) => {
 });
 
 const getProdcut = asyncWrapper(async (req, res) => {
-    const _id = req.params.id; 
-    
-    
-    const product = await Prodcut.find({_id}, { __v: 0 });
+    const _id = req.params.id;
+
+    const product = await Prodcut.find({ _id }, { __v: 0 });
 
     res.json({ status: httpStatusText.SUCCESS, data: { product } });
 });
 
 const createProdcut = asyncWrapper(async (req, res, next) => {
+    const categoryId = req.body.category;
+
+    const category = await Category.findById(categoryId);
+    if (!category) {
+        const error = appError.create(
+            "Category not found",
+            404,
+            httpStatusText.FAIL
+        );
+        return next(error);
+    }
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        const error = appError.create(errors.array(), 400, httpStatusText.FAIL);
+        return next(error);
+    }
     const newProdcut = new Prodcut(req.body);
     await newProdcut.save();
 
@@ -51,7 +67,7 @@ const updatePoduct = asyncWrapper(async (req, res, next) => {
     const id = req.params.id;
 
     const product = await Prodcut.findById(id);
-    
+
     if (!product) {
         const error = appError.create(
             "Prodcut not found",
