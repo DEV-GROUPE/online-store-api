@@ -7,12 +7,21 @@ import { validationResult } from "express-validator";
 import Category from "../models/category.model.js";
 
 const getAllPoducts = asyncWrapper(async (req, res) => {
-    const query = req.query;
-    const limit = +query.limit || 6;
-    const page = +query.page || 1;
-
-    const skip = (page - 1) * limit;
-    const products = await Product.find({}, { __v: 0 }).limit(limit).skip(skip);
+    const {
+        page = 1,
+        limit = 10,
+        sortBy = "createdAt",
+        order = "asc",
+    } = req.query;
+    // Pagination options
+    const options = {
+        page: parseInt(page, 10),
+        limit: parseInt(limit, 10),
+        sort: { [sortBy]: order === 'desc' ? -1 : 1 },
+      };
+  
+      // Paginate all products without filters
+      const products = await Product.paginate({}, options);
     res.json({ status: httpStatusText.SUCCESS, data: { products } });
 });
 
@@ -86,4 +95,10 @@ const updatePoduct = asyncWrapper(async (req, res, next) => {
     });
 });
 
-export { getAllPoducts, getProduct, createProduct, deleteProduct, updatePoduct };
+export {
+    getAllPoducts,
+    getProduct,
+    createProduct,
+    deleteProduct,
+    updatePoduct,
+};
