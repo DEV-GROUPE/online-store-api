@@ -3,6 +3,7 @@ import express from "express";
 import mongoose from "mongoose";
 import categoriesRoutes from "./routes/categories.routes.js";
 import userRoutes from "./routes/users.routes.js";
+import cartRoutes from "./routes/carts.routes.js";
 import productsRoutes from "./routes/products.routes.js";
 import { httpStatusText } from "./utils/httpStatusText.js";
 dotenv.config();
@@ -21,6 +22,7 @@ app.use((req, res, next) => {
 app.use("/api/products", productsRoutes);
 app.use("/api/categories", categoriesRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/carts", cartRoutes);
 
 // connect to db
 mongoose

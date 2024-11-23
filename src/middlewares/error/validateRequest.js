@@ -1,5 +1,6 @@
 import { validationResult } from "express-validator";
 import appError from "../../utils/appError.js";
+import { httpStatusText } from "../../utils/httpStatusText.js";
 
 const validateRequest = (validations) => {
     return async (req, res, next) => {
@@ -14,7 +15,7 @@ const validateRequest = (validations) => {
             const error = appError.create(
                 errors.array(),
                 400,
-                "Validation Failed"
+                httpStatusText.FAIL
             );
             return next(error);
         }
