@@ -3,6 +3,7 @@ import { PasswordHash } from "../helpers/functions.js";
 import bcrypt from "bcrypt";
 import validator from "validator";
 import { USER_ROLES } from "../utils/userRoles.js";
+import mongoosePaginate from 'mongoose-paginate-v2';
 
 const Schema = mongoose.Schema;
 
@@ -29,6 +30,8 @@ const userSchema = new Schema({
     },
 });
 
+// Add the plugin
+userSchema.plugin(mongoosePaginate);
 // static signup method
 userSchema.statics.signup = async function (username, email, password) {
     // validation

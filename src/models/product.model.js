@@ -1,5 +1,5 @@
 import mongoose, { Schema, model } from "mongoose";
-
+import mongoosePaginate from 'mongoose-paginate-v2';
 const ProductSchema = new Schema(
     {
         title: { type: String, required: true },
@@ -14,6 +14,8 @@ const ProductSchema = new Schema(
     },
     { timestamps: true }
 );
+// Add the plugin
+ProductSchema.plugin(mongoosePaginate);
 
 const Prodcut = model("Product", ProductSchema);
 

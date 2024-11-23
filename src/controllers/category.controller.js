@@ -4,14 +4,21 @@ import appError from "../utils/appError.js";
 import { httpStatusText } from "../utils/httpStatusText.js";
 
 const getAllCategories = asyncWrapper(async (req, res) => {
-    const query = req.query;
-    const limit = +query.limit || 6;
-    const page = +query.page || 1;
+    const {
+        page = 1,
+        limit = 10,
+        sortBy = "createdAt",
+        order = "asc",
+    } = req.query;
+    // Pagination options
+    const options = {
+        page: parseInt(page, 10),
+        limit: parseInt(limit, 10),
+        sort: { [sortBy]: order === "desc" ? -1 : 1 },
+    };
 
-    const skip = (page - 1) * limit;
-    const categories = await Category.find({}, { __v: 0 })
-        .limit(limit)
-        .skip(skip);
+    // Paginate all categories without filters
+    const categories = await Category.paginate({}, options);
     res.json({ status: httpStatusText.SUCCESS, data: { categories } });
 });
 

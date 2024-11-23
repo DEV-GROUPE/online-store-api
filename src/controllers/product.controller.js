@@ -1,5 +1,5 @@
-import asyncWrapper from "../middlewares//error/asyncWrapper.js";
-import Prodcut from "../models/product.model.js";
+import asyncWrapper from "../middlewares/error/asyncWrapper.js";
+import Product from "../models/product.model.js";
 
 import appError from "../utils/appError.js";
 import { httpStatusText } from "../utils/httpStatusText.js";
@@ -7,24 +7,33 @@ import { validationResult } from "express-validator";
 import Category from "../models/category.model.js";
 
 const getAllPoducts = asyncWrapper(async (req, res) => {
-    const query = req.query;
-    const limit = +query.limit || 6;
-    const page = +query.page || 1;
-
-    const skip = (page - 1) * limit;
-    const products = await Prodcut.find({}, { __v: 0 }).limit(limit).skip(skip);
+    const {
+        page = 1,
+        limit = 10,
+        sortBy = "createdAt",
+        order = "asc",
+    } = req.query;
+    // Pagination options
+    const options = {
+        page: parseInt(page, 10),
+        limit: parseInt(limit, 10),
+        sort: { [sortBy]: order === 'desc' ? -1 : 1 },
+      };
+  
+      // Paginate all products without filters
+      const products = await Product.paginate({}, options);
     res.json({ status: httpStatusText.SUCCESS, data: { products } });
 });
 
-const getProdcut = asyncWrapper(async (req, res) => {
+const getProduct = asyncWrapper(async (req, res) => {
     const _id = req.params.id;
 
-    const product = await Prodcut.find({ _id }, { __v: 0 });
+    const product = await Product.find({ _id }, { __v: 0 });
 
     res.json({ status: httpStatusText.SUCCESS, data: { product } });
 });
 
-const createProdcut = asyncWrapper(async (req, res, next) => {
+const createProduct = asyncWrapper(async (req, res, next) => {
     const categoryId = req.body.category;
 
     const category = await Category.findById(categoryId);
@@ -41,21 +50,21 @@ const createProdcut = asyncWrapper(async (req, res, next) => {
         const error = appError.create(errors.array(), 400, httpStatusText.FAIL);
         return next(error);
     }
-    const newProdcut = new Prodcut(req.body);
-    await newProdcut.save();
+    const newProduct = new Product(req.body);
+    await newProduct.save();
 
     res.status(201).json({
         status: httpStatusText.SUCCESS,
-        data: { Prodcut: newProdcut },
+        data: { product: newProduct },
     });
 });
 
-const deleteProdct = asyncWrapper(async (req, res, next) => {
+const deleteProduct = asyncWrapper(async (req, res, next) => {
     const id = req.params.id;
-    const deleteProduct = await Prodcut.findByIdAndDelete({ _id: id });
+    const deleteProduct = await Product.findByIdAndDelete({ _id: id });
     if (!deleteProduct) {
         const error = appError.create(
-            "Prodcut not found",
+            "Product not found",
             404,
             httpStatusText.FAIL
         );
@@ -66,24 +75,30 @@ const deleteProdct = asyncWrapper(async (req, res, next) => {
 const updatePoduct = asyncWrapper(async (req, res, next) => {
     const id = req.params.id;
 
-    const product = await Prodcut.findById(id);
+    const product = await Product.findById(id);
 
     if (!product) {
         const error = appError.create(
-            "Prodcut not found",
+            "Product not found",
             404,
             httpStatusText.FAIL
         );
         return next(error);
     }
-    const udateProdcut = await Prodcut.updateOne(
+    const udateProduct = await Product.updateOne(
         { _id: id },
         { $set: { ...req.body } }
     );
     res.status(200).json({
         status: httpStatusText.SUCCESS,
-        data: { Prodcut: udateProdcut },
+        data: { product: udateProduct },
     });
 });
 
-export { getAllPoducts, getProdcut, createProdcut, deleteProdct, updatePoduct };
+export {
+    getAllPoducts,
+    getProduct,
+    createProduct,
+    deleteProduct,
+    updatePoduct,
+};
