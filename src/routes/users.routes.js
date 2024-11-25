@@ -16,7 +16,12 @@ import {
 } from "../controllers/user.controller.js";
 import checkIsValidObjId from "../middlewares/mongoDbIdValidation.js";
 import validateRequest from "../middlewares/error/validateRequest.js";
-import createUserValidation from "../validationSchema/createUserValidation.js";
+import {
+    createUserValidation,
+    updateUserValidation,
+    signupUserValidation,
+    updateProfileValidation
+  } from './../validationSchema/user/index.js';
 
 const router = express.Router();
 
@@ -28,7 +33,7 @@ const router = express.Router();
 //login
 router.post("/login", loginUser);
 //signup
-router.post("/signup", signupUser);
+router.post("/signup", validateRequest(signupUserValidation), signupUser);
 
 /* 
     -user role
@@ -40,7 +45,7 @@ router.use(requireAuth);
 // get profile
 router.get("/profile", getMyProfile);
 // update profile
-router.patch("/profile", updateMyProfile);
+router.patch("/profile", validateRequest(updateProfileValidation), updateMyProfile);
 // delete profile
 router.delete("/profile", deleteMyProfile);
 
@@ -56,9 +61,9 @@ router.get("/", getUsers);
 // get user
 router.get("/:id", checkIsValidObjId, getUser);
 // add user
-router.post("/", validateRequest(createUserValidation), addUser);
+router.post("/", validateRequest(updateUserValidation), addUser);
 // update user
-router.patch("/:id", checkIsValidObjId, updateUser);
+router.patch("/:id", checkIsValidObjId, validateRequest(createUserValidation), updateUser);
 // delete user
 router.delete("/:id", checkIsValidObjId, deleteUser);
 
