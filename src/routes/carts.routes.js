@@ -1,22 +1,20 @@
 import express from "express";
 import {
-    createCart,
-    getAllCarts,
-    getCart,
-    deleteCart,
-    updateCart,
+    getPoductsFromCart,
+    deleteProductFromCart,
+    addProductToCart,
+    updateCartQuantity
 } from "../controllers/cart.controller.js";
 import checkIsValidObjId from "../middlewares/mongoDbIdValidation.js";
-import validateRequest from "../middlewares/error/validateRequest.js";
-import createCartValidation from "../validationSchema/createCartValidation.js";
+import requireAuth from "../middlewares/auth/requireAuth.js";
 
 const router = express.Router();
 
-router.post("/", validateRequest(createCartValidation),createCart);
-router.get("/", getAllCarts);
+router.use(requireAuth);
 
-router.get("/:id", checkIsValidObjId, getCart);
-router.put("/:id", checkIsValidObjId, updateCart);
-router.delete("/:id", checkIsValidObjId, deleteCart);
+router.get("/", getPoductsFromCart);
+router.post("/", addProductToCart);
+router.patch("/", updateCartQuantity);
+router.delete("/:id", checkIsValidObjId, deleteProductFromCart);
 
 export default router;

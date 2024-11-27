@@ -28,6 +28,19 @@ const userSchema = new Schema({
         default: USER_ROLES.USER,
         required: true,
     },
+    cart: [
+        {
+            productId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Product",
+            },
+            quantity: {
+                type: Number,
+                default: 1,
+                min: 1,
+            },
+        },
+    ],
 });
 
 // Add the plugin
