@@ -1,82 +1,78 @@
-import asyncWrapper from "../middlewares//error/asyncWrapper.js";
-import Cart from "../models/cart.model.js";
+import asyncWrapper from "../middlewares/error/asyncWrapper.js";
+import User from "../models/user.model.js";
 import appError from "../utils/appError.js";
 import { httpStatusText } from "../utils/httpStatusText.js";
 
-const createCart = asyncWrapper(async (req, res, next) => {
-    const newCart = new Cart(req.body);
-    await newCart.save();
+const getPoductsFromCart = asyncWrapper(async (req, res) => {
+    const userId = req.user._id;
 
-    res.status(201).json({
-        status: httpStatusText.SUCCESS,
-        data: { cart: newCart },
-    });
-});
+    const user = await User.findById(userId);
+    const cart = user.cart;
 
-const getCart = asyncWrapper(async (req, res) => {
-    const id = req.params.id;
-
-    const cart = await Cart.findById(id);
     res.json({ status: httpStatusText.SUCCESS, data: { cart } });
 });
-const getAllCarts = asyncWrapper(async (req, res) => {
-    const {
-        page = 1,
-        limit = 10,
-        sortBy = "createdAt",
-        order = "asc",
-    } = req.query;
-    // Pagination options
-    const options = {
-        page: parseInt(page, 10),
-        limit: parseInt(limit, 10),
-        sort: { [sortBy]: order === "desc" ? -1 : 1 },
-    };
 
-    // Paginate all carts without filters
-    const carts = await Cart.paginate({}, options);
-    res.json({ status: httpStatusText.SUCCESS, data: { carts } });
-});
+const addProductToCart = asyncWrapper(async (req, res, next) => {
+    const userId = req.user._id;
+    const { productId, quantity = 1 } = req.body;
+    const user = await User.findById(userId);
 
-const deleteCart = asyncWrapper(async (req, res, next) => {
-    const id = req.params.id;
-    const deleteCart = await Cart.findByIdAndDelete(id);
-    if (!deleteCart) {
-        const error = appError.create(
-            "cart not found",
-            404,
-            httpStatusText.FAIL
-        );
-        return next(error);
+    const existingProductIndex = user.cart.findIndex((item) => {
+        return item.productId?.toString() === productId;
+    });
+
+    if (existingProductIndex !== -1) {
+        user.cart[existingProductIndex].quantity += +quantity;
+    } else {
+        user.cart.push({ productId, quantity });
     }
-    res.status(200).json({ status: httpStatusText.SUCCESS, data: null });
-});
-const updateCart = asyncWrapper(async (req, res, next) => {
-    if (Object.keys(req.body).length === 0) {
-        const error = appError.create(
-            "Request body cannot be empty",
-            400,
-            httpStatusText.FAIL
-        );
-        return next(error);
-    }
-    const id = req.params.id;
-    const cart = await Cart.findById(id);
-    if (!cart) {
-        const error = appError.create(
-            "cart not found",
-            404,
-            httpStatusText.FAIL
-        );
-        return next(error);
-    }
-    const updateCart = await Cart.updateOne(
-        { _id: id },
-        { $set: { ...req.body } }
-    );
+
+    await user.save();
+
     res.status(200).json({
         status: httpStatusText.SUCCESS,
-        data: null,
+        data: { cart: user.cart },
     });
 });
-export { createCart, getAllCarts, getCart, deleteCart, updateCart };
+
+const updateCartQuantity = asyncWrapper(async (req, res, next) => {
+    const userId = req.user._id;
+    const { productId, quantity } = req.body;
+    const user = await User.findById(userId);
+    const existingProductIndex = user.cart.findIndex((item) => {
+        return item.productId?.toString() === productId?.toString();
+    });
+    if (existingProductIndex === -1) {
+        const error = appError.create(
+            "Product not found in cart",
+            404,
+            httpStatusText.FAIL
+        );
+        return next(error);
+    }
+    user.cart[existingProductIndex].quantity = +quantity;
+    await user.save();
+    res.status(200).json({
+        status: httpStatusText.SUCCESS,
+        data: { cart: user.cart },
+    });
+});
+
+const deleteProductFromCart = asyncWrapper(async (req, res, next) => {
+    const productId = req.params.id;
+    const userId = req.user._id;
+    const user = await User.findById(userId);
+
+    user.cart = user.cart.filter(
+        (item) => item.productId?.toString() !== productId
+    );
+    await user.save();
+    res.status(200).json({ status: httpStatusText.SUCCESS, data: null });
+});
+
+export {
+    getPoductsFromCart,
+    deleteProductFromCart,
+    addProductToCart,
+    updateCartQuantity,
+};
