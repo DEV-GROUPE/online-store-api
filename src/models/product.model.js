@@ -7,9 +7,7 @@ const ProductSchema = new Schema(
         imageUrl: { type: String, required: true },
         brand: { type: String, required: true },
         price: { type: String, required: true },
-        salePrice: {type: String, required: true },
         totalStock: { type: Number, required: true },
-        averageReview: { type: Number },
         category: { type: Schema.Types.ObjectId, ref: "Category" },
     },
     { timestamps: true }
