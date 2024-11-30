@@ -79,6 +79,7 @@ const updateMyProfile = asyncWrapper(async (req, res, next) => {
         validatedData.password = await PasswordHash(password);
     }
 
+    delete validatedData.cart;
     const user = await User.findOneAndUpdate({ _id: id }, validatedData);
 
     if (!user) {
@@ -168,7 +169,7 @@ const updateUser = asyncWrapper(async (req, res) => {
     if (validatedData.password) {
         validatedData.password = await PasswordHash(validatedData.password);
     }
-
+    delete validatedData.cart;
     const user = await User.findOneAndUpdate({ _id: id }, validatedData);
 
     if (!user) {

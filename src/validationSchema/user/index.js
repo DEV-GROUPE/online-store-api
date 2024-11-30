@@ -1,7 +1,7 @@
-import createUserValidation from "../validationSchema/user/createUserValidation.js";
-import updateUserValidation from "../validationSchema/user/updateUserValidation.js";
-import signupUserValidation from "../validationSchema/user/signupUserValidation.js";
-import updateProfileValidation from "../validationSchema/user/updateProfileValidation.js";
+import createUserValidation from "./createUserValidation.js";
+import updateUserValidation from "./updateUserValidation.js";
+import signupUserValidation from "./signupUserValidation.js";
+import updateProfileValidation from "./updateProfileValidation.js";
 
 export {
   createUserValidation,
