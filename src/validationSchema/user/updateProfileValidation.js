@@ -2,7 +2,7 @@ import {
     validateEmail,
     validatePassword,
     validateUsername,
-} from "./sharedUserValidation";
+} from "./sharedUserValidation.js";
 
 const updateProfileValidation = [
     validateEmail().optional(),

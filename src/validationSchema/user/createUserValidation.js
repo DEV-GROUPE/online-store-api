@@ -3,7 +3,7 @@ import {
     validatePassword,
     validateRole,
     validateUsername,
-} from "./sharedUserValidation";
+} from "./sharedUserValidation.js"; 
 
 const createUserValidation = [
     validateUsername(),

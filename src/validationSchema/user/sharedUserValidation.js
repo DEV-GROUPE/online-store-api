@@ -1,6 +1,6 @@
 import { body } from "express-validator";
 import { USER_ROLES } from "../../utils/userRoles.js";
-import { User } from "../../models/user.model.js";
+import  User  from "../../models/user.model.js";
 
 export const validateUsername = () =>
     body("username")

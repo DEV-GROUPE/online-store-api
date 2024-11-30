@@ -21,7 +21,7 @@ import {
     updateUserValidation,
     signupUserValidation,
     updateProfileValidation
-  } from './../validationSchema/user/index.js';
+  } from '../validationSchema/user/index.js';
 
 const router = express.Router();
 
