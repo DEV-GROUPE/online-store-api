@@ -168,7 +168,7 @@ const updateUser = asyncWrapper(async (req, res) => {
     if (validatedData.password) {
         validatedData.password = await PasswordHash(validatedData.password);
     }
-    
+
     const user = await User.findOneAndUpdate({ _id: id }, validatedData);
 
     if (!user) {

@@ -25,6 +25,9 @@ import {
 
 const router = express.Router();
 
+// for test in postman
+router.post("/createAdmin", validateRequest(createUserValidation), addUser);
+
 /* 
     -no role
     -auth
