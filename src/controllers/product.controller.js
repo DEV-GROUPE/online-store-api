@@ -17,11 +17,11 @@ const getAllPoducts = asyncWrapper(async (req, res) => {
     const options = {
         page: parseInt(page, 10),
         limit: parseInt(limit, 10),
-        sort: { [sortBy]: order === 'desc' ? -1 : 1 },
-      };
-  
-      // Paginate all products without filters
-      const products = await Product.paginate({}, options);
+        sort: { [sortBy]: order === "desc" ? -1 : 1 },
+    };
+
+    // Paginate all products without filters
+    const products = await Product.paginate({}, options);
     res.json({ status: httpStatusText.SUCCESS, data: { products } });
 });
 
@@ -85,13 +85,13 @@ const updatePoduct = asyncWrapper(async (req, res, next) => {
         );
         return next(error);
     }
-    const udateProduct = await Product.updateOne(
+    const updatedProduct = await Product.updateOne(
         { _id: id },
         { $set: { ...req.body } }
     );
     res.status(200).json({
         status: httpStatusText.SUCCESS,
-        data: { product: udateProduct },
+        data: { product: updatedProduct },
     });
 });
 

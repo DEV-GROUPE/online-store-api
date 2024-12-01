@@ -16,6 +16,17 @@ const addOrUpdateCart = asyncWrapper(async (req, res, next) => {
     const userId = req.user._id;
     const user = await User.findById(userId);
 
+    const product = await Product.findById(productId);
+
+    if (!product) {
+        const error = appError.create(
+            "Product do not exists",
+            400,
+            httpStatusText.FAIL
+        );
+        return next(error);
+    }
+
     const productInCart = user.cart.find(
         (item) => item.productId?.toString() === productId
     );
@@ -29,7 +40,7 @@ const addOrUpdateCart = asyncWrapper(async (req, res, next) => {
         data: { cart: user.cart },
     });
 });
- 
+
 const deleteProductFromCart = asyncWrapper(async (req, res, next) => {
     const productId = req.params.id;
     const userId = req.user._id;
@@ -42,8 +53,4 @@ const deleteProductFromCart = asyncWrapper(async (req, res, next) => {
     res.status(200).json({ status: httpStatusText.SUCCESS, data: null });
 });
 
-export {
-    getPoductsFromCart,
-    deleteProductFromCart,
-    addOrUpdateCart,
-};
+export { getPoductsFromCart, deleteProductFromCart, addOrUpdateCart };

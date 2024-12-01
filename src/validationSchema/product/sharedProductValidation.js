@@ -51,11 +51,11 @@ export const validateCategory = () =>
         .withMessage("The category ID is required.")
         .custom((value) => mongoose.Types.ObjectId.isValid(value))
         .withMessage("The category ID must be a valid ObjectId.")
-        .bail() // Stops further checks if the ID is invalid
-        .custom(async (value) => {
-            const categoryExists = await Category.findById(value);
-            if (!categoryExists) {
-                throw new Error("The category ID does not exist.");
-            }
-            return true;
-        });
+        .bail();
+// .custom(async (value) => {
+//     const categoryExists = await Category.findById(value);
+//     if (!categoryExists) {
+//         throw new Error("The category ID does not exist.");
+//     }
+//     return true;
+// })
