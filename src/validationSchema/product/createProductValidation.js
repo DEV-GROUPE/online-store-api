@@ -6,7 +6,7 @@ import {
     validatePrice,
     validateTitle,
     validateTotalStock,
-} from "./sharedProductValidation";
+} from "./sharedProductValidation.js";
 
 const createProductValidation = [
     validateBrand(),

@@ -1,4 +1,4 @@
-import { validateCategory } from "./sharedCategoryValidation";
+import { validateCategory } from "./sharedCategoryValidation.js";
 
 const updateCategoryValidation = [validateCategory().optional()];
 

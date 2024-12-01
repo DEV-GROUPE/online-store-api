@@ -7,7 +7,7 @@ import {
     updatePoduct,
 } from "../controllers/product.controller.js";
 import checkIsValidObjId from "../middlewares/mongoDbIdValidation.js";
-import createProductValidation from "../validationSchema/createProductValidation.js";
+import {createProductValidation} from "../validationSchema/product/index.js";
 import validateRequest from "../middlewares/error/validateRequest.js";
 import requireAuth from "../middlewares/auth/requireAuth.js";
 import authorization from "../middlewares/auth/authorization.js";

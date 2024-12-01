@@ -1,6 +1,6 @@
 import {
     validateCategory
-} from "./sharedCategoryValidation";
+} from "./sharedCategoryValidation.js";
 
 const createCategoryValidation = [
     validateCategory(),

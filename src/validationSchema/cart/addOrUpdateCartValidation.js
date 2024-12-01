@@ -1,4 +1,4 @@
-import { validateProductId, validateQuantity } from "./sharedCartValidation";
+import { validateProductId, validateQuantity } from "./sharedCartValidation.js";
 
 const addOrUpdateCartValidation = [validateProductId(), validateQuantity()];
 

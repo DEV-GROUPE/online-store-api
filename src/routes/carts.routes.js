@@ -7,7 +7,7 @@ import {
 import checkIsValidObjId from "../middlewares/mongoDbIdValidation.js";
 import requireAuth from "../middlewares/auth/requireAuth.js";
 import validateRequest from "../middlewares/error/validateRequest.js";
-import addOrUpdateCartValidation from "../validationSchema/cart/index.js";
+import {addOrUpdateCartValidation} from "../validationSchema/cart/index.js";
 
 const router = express.Router();
 
