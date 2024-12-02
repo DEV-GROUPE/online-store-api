@@ -1,5 +1,5 @@
 import mongoose, { Schema, model } from "mongoose";
-import mongoosePaginate from 'mongoose-paginate-v2';
+import mongoosePaginate from "mongoose-paginate-v2";
 const ProductSchema = new Schema(
     {
         title: { type: String, required: true },
@@ -9,9 +9,15 @@ const ProductSchema = new Schema(
         price: { type: String, required: true },
         totalStock: { type: Number, required: true },
         category: { type: Schema.Types.ObjectId, ref: "Category" },
+        isDeleted: { type: Boolean, default: false },
+        deletedAt: { type: Date },
     },
     { timestamps: true }
 );
+ProductSchema.pre(/^find/, function (next) {
+    this.where({ isDeleted: false });
+    next();
+});
 // Add the plugin
 ProductSchema.plugin(mongoosePaginate);
 

@@ -33,7 +33,17 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: password
-
+  mongo-express:
+        image: mongo-express
+        environment:
+            - ME_CONFIG_MONGODB_SERVER=mongo
+            - ME_CONFIG_MONGODB_PORT=27017
+            - ME_CONFIG_MONGODB_AUTH_USERNAME=root
+            - ME_CONFIG_MONGODB_AUTH_PASSWORD=password
+        depends_on:
+            - mongo
+        ports:
+          - "8080:8081"
   
 volumes:
   mongo-db:

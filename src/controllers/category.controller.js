@@ -23,7 +23,7 @@ const getAllCategories = asyncWrapper(async (req, res) => {
 });
 
 const getCategory = asyncWrapper(async (req, res) => {
-    const id = req.params.id;
+    const { id } = req.params;
 
     const category = await Category.findById(id);
     res.json({ status: httpStatusText.SUCCESS, data: { category } });
@@ -51,8 +51,11 @@ const createCategory = asyncWrapper(async (req, res, next) => {
     });
 });
 const deleteCategory = asyncWrapper(async (req, res, next) => {
-    const id = req.params.id;
-    const deleteCotegory = await Category.findByIdAndDelete({ _id: id });
+    const { id } = req.params;
+    const deleteCotegory = await Category.findByIdAndUpdate(id, {
+        isDeleted: true,
+        deletedAt: new Date(),
+    });
     if (!deleteCotegory) {
         const error = appError.create(
             "category not found",
@@ -64,9 +67,15 @@ const deleteCategory = asyncWrapper(async (req, res, next) => {
     res.status(200).json({ status: httpStatusText.SUCCESS, data: null });
 });
 const updateCategory = asyncWrapper(async (req, res, next) => {
-    const id = req.params.id;
-    const category = await Category.findById({ _id: id });
-    if (!category) {
+    const { id } = req.params;
+    const udateCategory = await Category.findByIdAndUpdate(
+        id,
+        { ...req.body },
+        {
+            new: true,
+        }
+    );
+    if (!udateCategory) {
         const error = appError.create(
             "category not found",
             404,
@@ -74,10 +83,6 @@ const updateCategory = asyncWrapper(async (req, res, next) => {
         );
         return next(error);
     }
-    const udateCategory = await Category.updateOne(
-        { _id: id },
-        { $set: { ...req.body } }
-    );
     res.status(200).json({
         status: httpStatusText.SUCCESS,
         data: { category: udateCategory },
