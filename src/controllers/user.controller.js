@@ -46,8 +46,8 @@ const signupUser = asyncWrapper(async (req, res) => {
     profile
 */
 const getMyProfile = asyncWrapper(async (req, res) => {
-    const user_id = req.user.id;
-    const user = await User.findById(user_id);
+    const {id} = req.user;
+    const user = await User.findById(id);
     res.status(200).json({
         status: httpStatusText.SUCCESS,
         data: { user },
@@ -55,9 +55,12 @@ const getMyProfile = asyncWrapper(async (req, res) => {
 });
 
 const deleteMyProfile = asyncWrapper(async (req, res, next) => {
-    const id = req.user._id;
+    const {id} = req.user;
 
-    const user = await User.findOneAndDelete({ _id: id });
+    const user = await User.findByIdAndUpdate(id, {
+        isDeleted: true,
+        deletedAt: new Date(),
+    });
 
     if (!user) {
         const error = appError.create("No such user", 404, httpStatusText.FAIL);
@@ -66,12 +69,13 @@ const deleteMyProfile = asyncWrapper(async (req, res, next) => {
 
     res.status(200).json({
         status: httpStatusText.SUCCESS,
-        data: {user},
+        data: null,
     });
 });
 
 const updateMyProfile = asyncWrapper(async (req, res, next) => {
-    const id = req.user._id;
+    const {id} = req.user;
+
     const validatedData = matchedData(req, { locations: ["body"] });
 
     const password = validatedData.password;
@@ -79,7 +83,7 @@ const updateMyProfile = asyncWrapper(async (req, res, next) => {
         validatedData.password = await PasswordHash(password);
     }
 
-    const user = await User.findOneAndUpdate({ _id: id }, validatedData);
+    const user = await User.findByIdAndUpdate(id, validatedData,{ new: true });
 
     if (!user) {
         const error = appError.create("No such user", 404, httpStatusText.FAIL);
@@ -119,8 +123,8 @@ const getUsers = asyncWrapper(async (req, res) => {
 });
 
 const getUser = asyncWrapper(async (req, res) => {
-    const user_id = req.params.id;
-    const users = await User.findById(user_id);
+    const { id } = req.params;
+    const users = await User.findById(id);
     res.status(200).json({
         status: httpStatusText.SUCCESS,
         data: { users },
@@ -148,7 +152,10 @@ const addUser = asyncWrapper(async (req, res) => {
 const deleteUser = asyncWrapper(async (req, res, next) => {
     const { id } = req.params;
 
-    const user = await User.findOneAndDelete({ _id: id });
+    const user = await User.findByIdAndUpdate(id, {
+        isDeleted: true,
+        deletedAt: new Date(),
+    });
 
     if (!user) {
         const error = appError.create("No such user", 404, httpStatusText.FAIL);
@@ -157,19 +164,19 @@ const deleteUser = asyncWrapper(async (req, res, next) => {
 
     res.status(200).json({
         status: httpStatusText.SUCCESS,
-        data: {user},
+        data: null,
     });
 });
 
-const updateUser = asyncWrapper(async (req, res) => {
+const updateUser = asyncWrapper(async (req, res, next) => {
     const { id } = req.params;
     const validatedData = matchedData(req, { locations: ["body"] });
-    
+
     if (validatedData.password) {
         validatedData.password = await PasswordHash(validatedData.password);
     }
 
-    const user = await User.findOneAndUpdate({ _id: id }, validatedData);
+    const user = await User.findOneAndUpdate(id, validatedData);
 
     if (!user) {
         const error = appError.create("No such user", 404, httpStatusText.FAIL);
@@ -178,7 +185,7 @@ const updateUser = asyncWrapper(async (req, res) => {
 
     res.status(200).json({
         status: httpStatusText.SUCCESS,
-        data: {user},
+        data: { user },
     });
 });
 

@@ -1,6 +1,7 @@
 import asyncWrapper from "../middlewares/error/asyncWrapper.js";
 import User from "../models/user.model.js";
 import { httpStatusText } from "../utils/httpStatusText.js";
+import Product from "../models/product.model.js";
 
 const getPoductsFromCart = asyncWrapper(async (req, res) => {
     const userId = req.user._id;

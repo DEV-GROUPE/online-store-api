@@ -6,42 +6,50 @@ import mongoosePaginate from "mongoose-paginate-v2";
 
 const Schema = mongoose.Schema;
 
-const userSchema = new Schema({
-    username: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    password: {
-        type: String,
-        required: true,
-    },
-    role: {
-        type: String,
-        enum: Object.values(USER_ROLES),
-        default: USER_ROLES.USER,
-        required: true,
-    },
-    cart: [
-        {
-            productId: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Product",
-            },
-            quantity: {
-                type: Number,
-                default: 1,
-                min: 1,
-            },
+const userSchema = new Schema(
+    {
+        username: {
+            type: String,
+            required: true,
+            unique: true,
         },
-    ],
+        email: {
+            type: String,
+            required: true,
+            unique: true,
+        },
+        password: {
+            type: String,
+            required: true,
+        },
+        role: {
+            type: String,
+            enum: Object.values(USER_ROLES),
+            default: USER_ROLES.USER,
+            required: true,
+        },
+        cart: [
+            {
+                productId: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "Product",
+                },
+                quantity: {
+                    type: Number,
+                    default: 1,
+                    min: 1,
+                },
+            },
+        ],
+        isDeleted: { type: Boolean, default: false },
+        deletedAt: { type: Date },
+    },
+    { timestamps: true }
+);
+userSchema.pre(/^find/, function (next) {
+    this.where({ isDeleted: false });
+    next();
 });
-
 userSchema.statics.signup = async function (username, email, password) {
     const hash = await PasswordHash(password);
     const user = await this.create({ username, email, password: hash });

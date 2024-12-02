@@ -1,12 +1,19 @@
 import jwt from "jsonwebtoken";
 import User from "../../models/user.model.js";
+import appError from "../../utils/appError.js";
+import { httpStatusText } from "../../utils/httpStatusText.js";
 
 const requireAuth = async (req, res, next) => {
     // verify user is authenticated
     const { authorization } = req.headers;
 
     if (!authorization) {
-        return res.status(401).json({ error: "Authorization token required" });
+        const error = appError.create(
+            "Authorization token required",
+            401,
+            httpStatusText.FAIL
+        );
+        return next(error);
     }
 
     const token = authorization.split(" ")[1];
@@ -16,12 +23,22 @@ const requireAuth = async (req, res, next) => {
 
         req.user = await User.findOne({ _id }).select("_id role");
         if (!req.user) {
-            return res.status(401).json({ error: "Authorization: User Not Fount" });
+            const error = appError.create(
+                "Authorization: User Not Fount",
+                401,
+                httpStatusText.FAIL
+            );
+            return next(error);
         }
         next();
-    } catch (error) {
-        console.log(error);
-        res.status(401).json({ error: "Request is not authorized" });
+    } catch (err) {
+        
+        const error = appError.create(
+            "Request is not authorized",
+            401,
+            httpStatusText.FAIL
+        );
+        return next(error);
     }
 };
 

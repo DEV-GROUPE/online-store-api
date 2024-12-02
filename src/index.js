@@ -6,6 +6,7 @@ import userRoutes from "./routes/users.routes.js";
 import cartRoutes from "./routes/carts.routes.js";
 import productsRoutes from "./routes/products.routes.js";
 import { httpStatusText } from "./utils/httpStatusText.js";
+import appError from "./utils/appError.js";
 dotenv.config();
 
 // express app
@@ -39,11 +40,10 @@ mongoose
     });
 
 // handle 404 errors
-app.all("*", (req, res) => {
-    res.status(404).json({
-        status: httpStatusText.ERROR,
-        message: "this resource is not available",
-    });
+app.all("*", (req, res,next) => {
+  const error = appError.create("this resource is not available",404,httpStatusText.ERROR);
+  return next(error);
+     
 });
 
 app.use((error, req, res, next) => {
