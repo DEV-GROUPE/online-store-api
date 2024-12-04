@@ -23,10 +23,18 @@ const getAllCategories = asyncWrapper(async (req, res) => {
     res.json({ status: httpStatusText.SUCCESS, data: { categories } });
 });
 
-const getCategory = asyncWrapper(async (req, res) => {
+const getCategory = asyncWrapper(async (req, res, next) => {
     const { id } = req.params;
 
     const category = await Category.findById(id);
+    if (!category) {
+        const error = appError.create(
+            "category not found",
+            404,
+            httpStatusText.FAIL
+        );
+        return next(error);
+    }
     res.json({ status: httpStatusText.SUCCESS, data: { category } });
 });
 const createCategory = asyncWrapper(async (req, res, next) => {
@@ -37,7 +45,7 @@ const createCategory = asyncWrapper(async (req, res, next) => {
     if (oldCategory) {
         const error = appError.create(
             "category already exists",
-            400,
+            409,
             httpStatusText.FAIL
         );
         return next(error);
