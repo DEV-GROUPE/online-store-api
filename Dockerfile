@@ -10,6 +10,16 @@ COPY . .
 EXPOSE 8000
 CMD npm run dev
 
+FROM base AS test
+RUN npm i -g jest
+RUN npm i -g supertest
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+EXPOSE 9000
+CMD npm run test
+
 FROM base AS production
 
 WORKDIR /app

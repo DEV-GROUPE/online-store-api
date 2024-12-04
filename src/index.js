@@ -27,23 +27,27 @@ app.use("/api/carts", cartRoutes);
 
 // connect to db
 mongoose
-    .connect(process.env.MONGO_URI)
+    .connect(process.env.MONGO_URI, {
+        authSource: "admin",
+    })
     .then(() => {
         console.log("connected to database");
-        // listen to port
-        app.listen(process.env.PORT, () => {
-            console.log("listening for requests on port", process.env.PORT);
-        });
     })
     .catch((err) => {
         console.log(err);
     });
-
+// listen to port
+export const server = app.listen(process.env.PORT, () => {
+    console.log("listening for requests on port", process.env.PORT);
+});
 // handle 404 errors
-app.all("*", (req, res,next) => {
-  const error = appError.create("this resource is not available",404,httpStatusText.ERROR);
-  return next(error);
-     
+app.all("*", (req, res, next) => {
+    const error = appError.create(
+        "this resource is not available",
+        404,
+        httpStatusText.ERROR
+    );
+    return next(error);
 });
 
 app.use((error, req, res, next) => {

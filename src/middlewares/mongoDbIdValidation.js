@@ -6,7 +6,11 @@ const checkIsValidObjId = (req, res, next) => {
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        const error = appError.create("Invalid ID", 400, httpStatusText.FAIL);
+        const error = appError.create(
+            "Invalid category ID format",
+            400,
+            httpStatusText.ERROR
+        );
         return next(error);
     }
 
