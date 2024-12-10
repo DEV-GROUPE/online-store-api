@@ -17,7 +17,7 @@ const app = express();
 app.use(express.json());
 
 app.use((req, res, next) => {
-    console.log(`[${req.method}] ${req.path}`);
+    // console.log(`[${req.method}] ${req.path}`);
     next();
 });
 
@@ -47,7 +47,7 @@ app.all("*", (req, res, next) => {
     const error = appError.create(
         "this resource is not available",
         404,
-        httpStatusText.ERROR
+        httpStatusText.FAIL
     );
     return next(error);
 });

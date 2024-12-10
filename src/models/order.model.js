@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2";
+import { ORDER_STATUS } from "../utils/orderStatus";
 
 const OrderSchema = new mongoose.Schema(
     {
@@ -58,10 +59,10 @@ const OrderSchema = new mongoose.Schema(
             type: String,
             maxlength: 500,
         },
-        orderStatus: {
+        status: {
             type: String,
-            enum: ["pending", "processing", "shipped", "delivered", "canceled"],
-            default: "pending",
+            enum: Object.values(ORDER_STATUS),
+            default: ORDER_STATUS.PENDING,
             required: true,
         },
     },

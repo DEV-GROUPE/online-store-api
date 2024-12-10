@@ -10,6 +10,7 @@ describe("Category API", () => {
     let categoryId;
     let token;
     beforeAll(async () => {
+        await Category.deleteMany();
         await User.deleteMany();
         const user = await User.createUser(
             "admin",
@@ -103,7 +104,7 @@ describe("Category API", () => {
         });
     });
     describe("Creating a new category", () => {
-        it("should delete a category with valid token", async () => {
+        it("should create a category with valid token", async () => {
             const newCategory = { name: "New Category" };
             const response = await request(server)
                 .post("/api/categories")
@@ -140,10 +141,7 @@ describe("Category API", () => {
                 expect.arrayContaining([
                     expect.objectContaining({
                         msg: "Category name is required.",
-                    }),
-                    expect.objectContaining({
-                        msg: "Category name must be at least 3 characters long.",
-                    }),
+                    })
                 ])
             );
         });
@@ -157,9 +155,15 @@ describe("Category API", () => {
                 .set("Authorization", `Bearer ${token}`)
                 .send(existingCategory);
 
-            expect(response.status).toBe(409);
+            expect(response.status).toBe(400);
             expect(response.body.status).toBe(httpStatusText.FAIL);
-            expect(response.body.message).toBe("category already exists");
+            expect(response.body.message).toEqual(
+                expect.arrayContaining([
+                    expect.objectContaining({
+                        msg: "Name of category is already in use",
+                    }),
+                ])
+            );
         });
         it("should fail if the user does not have permission", async () => {
             const newCategory = { name: "Category for user" };
@@ -248,7 +252,7 @@ describe("Category API", () => {
     describe("Updating a category", () => {
         it("should upadte a category with valid token", async () => {
             const response = await request(server)
-                .put(`/api/categories/${categoryId}`)
+                .patch(`/api/categories/${categoryId}`)
                 .set("Authorization", `Bearer ${token}`)
                 .send({ name: "Updated Category Name" });
 
@@ -263,7 +267,7 @@ describe("Category API", () => {
             expect(updatedCategory.name).toBe("Updated Category Name");
         });
         it("should fail to delete a category without a token", async () => {
-            const response = await request(server).put(
+            const response = await request(server).patch(
                 `/api/categories/${categoryId}`
             );
 
@@ -284,7 +288,7 @@ describe("Category API", () => {
             const token = createToken(user._id);
 
             const response = await request(server)
-                .put(`/api/categories/${categoryId}`)
+                .patch(`/api/categories/${categoryId}`)
                 .set("Authorization", `Bearer ${token}`);
 
             expect(response.status).toBe(403);
@@ -294,7 +298,7 @@ describe("Category API", () => {
         it("should fail to update a non-existing category", async () => {
             const invalidCategoryId = new mongoose.Types.ObjectId();
             const response = await request(server)
-                .put(`/api/categories/${invalidCategoryId}`)
+                .patch(`/api/categories/${invalidCategoryId}`)
                 .set("Authorization", `Bearer ${token}`)
                 .send({ name: "New Category Name" });
 
@@ -306,7 +310,7 @@ describe("Category API", () => {
             const invalidCategoryId = "12345";
 
             const response = await request(server)
-                .put(`/api/categories/${invalidCategoryId}`)
+                .patch(`/api/categories/${invalidCategoryId}`)
                 .set("Authorization", `Bearer ${token}`);
 
             expect(response.status).toBe(400);

@@ -5,12 +5,12 @@ services:
       context: .
       target: test
     ports:
-      - "8000:8000"
+      - "9000:9000"
     environment:
       NODE_ENV: test
       MONGO_URI: mongodb://root:password@mongo:27017/testDb
       SECRET: secret
-      PORT: 8000
+      PORT: 9000
     depends_on:
       - mongo
     develop:
