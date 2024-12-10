@@ -85,10 +85,11 @@ const deleteProduct = asyncWrapper(async (req, res, next) => {
 });
 const updatePoduct = asyncWrapper(async (req, res, next) => {
     const { id } = req.params;
+    const validatedData = matchedData(req, { locations: ["body"] });
 
     const updatedProduct = await Product.findByIdAndUpdate(
         id,
-        { ...req.body },
+        validatedData,
         { new: true }
     );
     if (!updatedProduct) {

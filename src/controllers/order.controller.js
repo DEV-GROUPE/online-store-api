@@ -5,9 +5,11 @@ import Product from "../models/product.model.js";
 import appError from "../utils/appError.js";
 import { httpStatusText } from "../utils/httpStatusText.js";
 import { USER_ROLES } from "../utils/userRoles.js";
+import { matchedData } from "express-validator";
 
 const createOrder = asyncWrapper(async (req, res, next) => {
-    const { address, city, pincode, phone, notes } = req.body;
+    const validatedData = matchedData(req, { locations: ["body"] });
+
     const userId = req.user._id;
     const cartItems = [];
     let totalAmount = 0;
@@ -53,11 +55,7 @@ const createOrder = asyncWrapper(async (req, res, next) => {
         user: userId,
         cartItems,
         totalAmount,
-        address,
-        city,
-        pincode,
-        phone,
-        notes,
+        ...validatedData,
     });
     await newOrder.save();
 
@@ -151,13 +149,12 @@ const getOrder = asyncWrapper(async (req, res, next) => {
 });
 
 const updateOrderStatus = asyncWrapper(async (req, res, next) => {
+    const validatedData = matchedData(req, { locations: ["body"] });
     const orderId = req.params.id;
-    const { orderStatus } = req.body;
-    const order = await Order.findByIdAndUpdate(
-        orderId,
-        { orderStatus },
-        { new: true }
-    );
+
+    const order = await Order.findByIdAndUpdate(orderId, validatedData, {
+        new: true,
+    });
     if (!order) {
         const error = appError.create(
             "Order not found",
@@ -166,7 +163,15 @@ const updateOrderStatus = asyncWrapper(async (req, res, next) => {
         );
         return next(error);
     }
+    console.log("order", order);
+
     res.status(200).json({ status: httpStatusText.SUCCESS, data: order });
 });
 
-export { createOrder, getAllOrders, getUserOrders, getOrder, updateOrderStatus };
+export {
+    createOrder,
+    getAllOrders,
+    getUserOrders,
+    getOrder,
+    updateOrderStatus,
+};

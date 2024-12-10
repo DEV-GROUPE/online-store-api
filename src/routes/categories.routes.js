@@ -13,6 +13,7 @@ import checkIsValidObjId from "../middlewares/mongoDbIdValidation.js";
 import validateRequest from "../middlewares/error/validateRequest.js";
 import createCategoryValidation from "../validationSchema/category/createCategoryValidation.js";
 import { USER_ROLES } from "../utils/userRoles.js";
+import updateCategoryValidation from "../validationSchema/category/updateCategoryValidation.js";
 
 const router = express.Router();
 
@@ -24,6 +25,11 @@ router.use(authorization(USER_ROLES.ADMIN));
 
 router.post("/", validateRequest(createCategoryValidation), createCategory);
 router.delete("/:id", checkIsValidObjId, deleteCategory);
-router.put("/:id", checkIsValidObjId, updateCategory);
+router.patch(
+    "/:id",
+    checkIsValidObjId,
+    validateRequest(updateCategoryValidation),
+    updateCategory
+);
 
 export default router;

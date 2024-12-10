@@ -1,4 +1,4 @@
 import { validateOrderStatus } from "./sharedOrderValidation.js";
 
-const updateOrderValidation = [validateOrderStatus().optional()];
+const updateOrderValidation = [validateOrderStatus()];
 export default updateOrderValidation;

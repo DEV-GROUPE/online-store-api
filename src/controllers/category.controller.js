@@ -1,3 +1,4 @@
+import { matchedData } from "express-validator";
 import asyncWrapper from "../middlewares//error/asyncWrapper.js";
 import Category from "../models/category.model.js";
 import Prodcut from "../models/product.model.js";
@@ -38,20 +39,8 @@ const getCategory = asyncWrapper(async (req, res, next) => {
     res.json({ status: httpStatusText.SUCCESS, data: { category } });
 });
 const createCategory = asyncWrapper(async (req, res, next) => {
-    const { name } = req.body;
-
-    const oldCategory = await Category.findOne({ name });
-
-    if (oldCategory) {
-        const error = appError.create(
-            "category already exists",
-            409,
-            httpStatusText.FAIL
-        );
-        return next(error);
-    }
-
-    const newCategory = new Category(req.body);
+    const validatedData = matchedData(req, { locations: ["body"] });
+    const newCategory = new Category(validatedData);
     await newCategory.save();
 
     res.status(201).json({
@@ -61,8 +50,8 @@ const createCategory = asyncWrapper(async (req, res, next) => {
 });
 const deleteCategory = asyncWrapper(async (req, res, next) => {
     const { id } = req.params;
-    const product = await Prodcut.countDocuments({category: id});
-    if(product > 0){
+    const product = await Prodcut.countDocuments({ category: id });
+    if (product > 0) {
         const error = appError.create(
             "Can't delete category. It's associated with a product.",
             400,
@@ -82,14 +71,12 @@ const deleteCategory = asyncWrapper(async (req, res, next) => {
     res.status(200).json({ status: httpStatusText.SUCCESS, data: null });
 });
 const updateCategory = asyncWrapper(async (req, res, next) => {
+    const validatedData = matchedData(req, { locations: ["body"] });
+    
     const { id } = req.params;
-    const udateCategory = await Category.findByIdAndUpdate(
-        id,
-        { ...req.body },
-        {
-            new: true,
-        }
-    );
+    const udateCategory = await Category.findByIdAndUpdate(id, validatedData, {
+        new: true,
+    });
     if (!udateCategory) {
         const error = appError.create(
             "category not found",
