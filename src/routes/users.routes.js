@@ -22,6 +22,7 @@ import {
     signupUserValidation,
     updateProfileValidation
   } from '../validationSchema/user/index.js';
+import { USER_ROLES } from "../utils/userRoles.js";
 
 const router = express.Router();
 
@@ -57,7 +58,7 @@ router.delete("/profile", deleteMyProfile);
     -user crud
 */
 
-router.use(authorization("admin"));
+router.use(authorization(USER_ROLES.ADMIN));
 
 // get all users
 router.get("/", getUsers);
