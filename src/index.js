@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import categoriesRoutes from "./routes/categories.routes.js";
 import userRoutes from "./routes/users.routes.js";
 import cartRoutes from "./routes/carts.routes.js";
+import orderRoutes from "./routes/orders.routes.js";
 import productsRoutes from "./routes/products.routes.js";
 import { httpStatusText } from "./utils/httpStatusText.js";
 import appError from "./utils/appError.js";
@@ -24,6 +25,7 @@ app.use("/api/products", productsRoutes);
 app.use("/api/categories", categoriesRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/carts", cartRoutes);
+app.use("/api/orders", orderRoutes);
 
 // connect to db
 mongoose

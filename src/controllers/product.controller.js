@@ -16,19 +16,38 @@ const getAllPoducts = asyncWrapper(async (req, res) => {
         page: parseInt(page, 10),
         limit: parseInt(limit, 10),
         sort: { [sortBy]: order === "desc" ? -1 : 1 },
+        populate: {
+            path: "category",
+            select: "name",
+        },
     };
 
     // Paginate all products without filters
-    const products = await Product.paginate({}, options);
-    res.json({ status: httpStatusText.SUCCESS, data: { products } });
+    const products = await Product.paginate({ isDeleted: false }, options);
+    res.json({ status: httpStatusText.SUCCESS, data: products });
 });
 
-const getProduct = asyncWrapper(async (req, res) => {
+const getProduct = asyncWrapper(async (req, res, next) => {
     const { id } = req.params;
 
-    const product = await Product.findById(id, { __v: 0 });
+    const product = await Product.findOne(
+        { _id: id, isDeleted: false },
+        { __v: 0}
+    ).populate({
+        path: "category",
+        select: "name",
+    });
+    console.log("product", product);
 
-    res.json({ status: httpStatusText.SUCCESS, data: { product } });
+    if (!product) {
+        const error = appError.create(
+            "Product not found or deleted",
+            404,
+            httpStatusText.FAIL
+        );
+        return next(error);
+    }
+    res.json({ status: httpStatusText.SUCCESS, data: product });
 });
 
 const createProduct = asyncWrapper(async (req, res, next) => {
@@ -44,12 +63,9 @@ const createProduct = asyncWrapper(async (req, res, next) => {
 
 const deleteProduct = asyncWrapper(async (req, res, next) => {
     const { id } = req.params;
+    const product = await Product.findOne({ _id: id, isDeleted: false });
 
-    const deleteProduct = await Product.findByIdAndUpdate(id, {
-        isDeleted: true,
-        deletedAt: new Date(),
-    });
-    if (!deleteProduct) {
+    if (!product) {
         const error = appError.create(
             "Product not found",
             404,
@@ -57,6 +73,14 @@ const deleteProduct = asyncWrapper(async (req, res, next) => {
         );
         return next(error);
     }
+
+    await Product.updateOne(
+        { _id: id },
+        {
+            isDeleted: true,
+            deletedAt: new Date(),
+        }
+    );
     res.status(200).json({ status: httpStatusText.SUCCESS, data: null });
 });
 const updatePoduct = asyncWrapper(async (req, res, next) => {

@@ -11,6 +11,7 @@ import {createProductValidation} from "../validationSchema/product/index.js";
 import validateRequest from "../middlewares/error/validateRequest.js";
 import requireAuth from "../middlewares/auth/requireAuth.js";
 import authorization from "../middlewares/auth/authorization.js";
+import { USER_ROLES } from "../utils/userRoles.js";
 
 const router = express.Router();
 
@@ -21,7 +22,7 @@ router.get("/", getAllPoducts);
 router.get("/:id", checkIsValidObjId, getProduct);
 
 router.use(requireAuth);
-router.use(authorization("admin"));
+router.use(authorization(USER_ROLES.ADMIN));
 
 // create
 router.post("/", validateRequest(createProductValidation), createProduct);
